@@ -151,21 +151,6 @@ client.connect(err => {
             })
 
     })
-
-    //   //Place order
-    //   app.post('/placeOrder', (req, res) => {
-    //     const newBook = req.body;
-    //     ordersCollection.insertOne(newBook)
-    //       .then(result => {
-    //         res.send(result.insertedCount > 0);
-    //       })
-    //   })
-
-
-
-
-
-    //  client.close();
 });
 
-app.listen(port, () => { })
+app.listen(port)
