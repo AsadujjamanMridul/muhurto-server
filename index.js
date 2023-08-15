@@ -1,7 +1,7 @@
 const express = require("express");
 // const MongoClient = require('mongodb').MongoClient;
-const { MongoClient, ServerApiVersion } = require("mongodb");
-const ObjectId = require("mongodb").ObjectId;
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+// const ObjectId = require("mongodb").ObjectId;
 
 const app = express();
 const cors = require("cors");
@@ -46,8 +46,6 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
-
-    console.log("connection error : ", err);
     const bookingsCollection = client.db("muhurtodb").collection("bookings");
     const adminsCollection = client.db("muhurtodb").collection("admins");
     const reviewsCollection = client.db("muhurtodb").collection("reviews");
@@ -55,36 +53,60 @@ async function run() {
     //   const ordersCollection = client.db("humayunnamaDb").collection("orders");
 
     // All Services
-    app.get("/services", (req, res) => {
-      servicesCollection.find().toArray((err, items) => {
-        res.send(items);
-      });
+    // app.get("/services", (req, res) => {
+    //   servicesCollection.find().toArray((err, items) => {
+    //     res.send(items);
+    //   });
+    // });
+    app.get("/services", async (req, res) => {
+        const result = await servicesCollection.find().toArray();
+        res.send(result);
     });
+
 
     // Delete Service
-    app.delete("/deleteService/:id", (req, res) => {
-      servicesCollection
-        .deleteOne({ _id: ObjectId(req.params.id) })
-        .then((result) => {
-          res.send(result.deletedCount > 0);
-        });
+    // app.delete("/deleteService/:id", (req, res) => {
+    //   servicesCollection
+    //     .deleteOne({ _id: ObjectId(req.params.id) })
+    //     .then((result) => {
+    //       res.send(result.deletedCount > 0);
+    //     });
+    // });
+    app.delete("/deleteService/:id", async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await servicesCollection.deleteOne(query);
+        res.send(result);
     });
+
 
     // All Bookings
-    app.get("/bookings", (req, res) => {
-      bookingsCollection.find().toArray((err, items) => {
-        res.send(items);
-      });
+    // app.get("/bookings", (req, res) => {
+    //   bookingsCollection.find().toArray((err, items) => {
+    //     res.send(items);
+    //   });
+    // });
+    app.get("/bookings", async (req, res) => {
+        const result = await bookingsCollection.find().toArray();
+        res.send(result);
     });
 
+
     // Check Admin
-    app.get("/isAdmin", (req, res) => {
-      adminsCollection
-        .find({ email: req.query.email })
-        .toArray((err, admins) => {
-          res.send(admins.length > 0);
-        });
+    // app.get("/isAdmin", (req, res) => {
+    //   adminsCollection
+    //     .find({ email: req.query.email })
+    //     .toArray((err, admins) => {
+    //       res.send(admins.length > 0);
+    //     });
+    // });
+    app.get("/isAdmin", async (req, res) => {
+        const email = req.query.email;
+        const query = { email: email };
+        const result = await adminsCollection.find(query).toArray();
+        res.send(result.length > 0);
     });
+
 
     // New Booking
     app.post("/newBooking", (req, res) => {
@@ -93,6 +115,7 @@ async function run() {
         res.send(result.insertedCount > 0);
       });
     });
+
 
     // Booking list of an user
     app.get("/bookingList", (req, res) => {
@@ -104,11 +127,17 @@ async function run() {
     });
 
     // All Reviews
-    app.get("/reviews", (req, res) => {
-      reviewsCollection.find().toArray((err, items) => {
-        res.send(items);
-      });
+    // app.get("/reviews", (req, res) => {
+    //   reviewsCollection.find().toArray((err, items) => {
+    //     res.send(items);
+    //   });
+    // });
+    app.get("/reviews", async (req, res) => {
+        const result = await reviewsCollection.find().toArray();
+        res.send(result);
     });
+
+
 
     // Add Review
     app.post("/addReview", (req, res) => {
@@ -118,6 +147,8 @@ async function run() {
       });
     });
 
+
+
     // Add New Admin
     app.post("/addAdmin", (req, res) => {
       const newAdmin = req.body;
@@ -125,6 +156,8 @@ async function run() {
         res.send(result.insertedCount > 0);
       });
     });
+
+    
 
     // Add New Service
     app.post("/addService", (req, res) => {
@@ -172,6 +205,8 @@ async function run() {
     // await client.close();
   }
 }
+
+run().catch(console.dir);
 
 // client.connect((err) => {
 //   console.log("connection error : ", err);
@@ -288,4 +323,11 @@ async function run() {
 //   });
 // });
 
-app.listen(port);
+
+app.get("/", (req, res) => {
+	res.send("Server is running");
+});
+
+app.listen(port, () => {
+	console.log(`Server is running on port: ${port}`);
+});
