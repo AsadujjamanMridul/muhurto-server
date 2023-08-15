@@ -1,1 +1,0 @@
-web: sh setup.sh && stremlit run index.js
