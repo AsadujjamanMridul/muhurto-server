@@ -11,7 +11,15 @@ const fs = require('fs-extra');
 
 const port = process.env.PORT || 5000;
 
-app.use(cors());
+const corsConfig = {
+    origin: 'Access-Control-Allow-Origin',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE']
+}
+
+app.use(cors(corsConfig))
+app.options("", cors(corsConfig))
+
 app.use(bodyParser.json());
 app.use(express.static('services'));
 app.use(fileUpload());
